@@ -95,11 +95,11 @@ terraform apply -auto-approve
 
 **Lista de instâncias EC2:**
 
-![AWS Console - Lista de Instâncias](screenshots/10-aws-console-ec2-list.png)
+![AWS Console - Lista de Instâncias](screenshots/aws_details.png)
 
 **Detalhes da instância criada:**
 
-![AWS Console - Detalhes da Instância](screenshots/11-aws-console-ec2-details.png)
+![AWS Console - Detalhes da Instância](screenshots/aws_details_ec2.png)
 
 ### Resumo dos Recursos
 
@@ -133,21 +133,3 @@ terraform destroy       # Destruir infraestrutura
 terraform state list    # Listar recursos gerenciados
 terraform show          # Ver detalhes do estado
 ```
-
----
-
-## Considerações
-
-- **Custo:** t2.micro está no AWS Free Tier (750h/mês)
-- **Segurança:** Credenciais em `~/.aws/credentials` (fora do repo)
-- **tfstate:** Contém dados sensíveis, está no .gitignore
-- **Destruir:** Execute `terraform destroy` quando não precisar mais
-
-## Referências
-
-- [Tutorial HashiCorp](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/aws-build)
-- [Terraform AWS Provider](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
-
----
-
-Repositório: https://github.com/lucasbrasil9/terraform-aws-ec2-tutorial
