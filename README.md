@@ -20,6 +20,7 @@ learn-terraform-aws/
 ├── terraform.tf      # Configura o Terraform e define o provider AWS
 ├── main.tf           # Declara a infraestrutura: provider, data source e recurso
 ├── .gitignore        # Evita que credenciais e arquivos sensíveis vão para o Git
+├── screenshots/      # Prints dos comandos executados e recursos na AWS
 └── README.md         # Este arquivo com toda a documentação
 ```
 
@@ -101,7 +102,19 @@ resource "aws_instance" "app_server" {
 
 ---
 
-### 4. Formatando o código
+### 4. Verificando a versão do Terraform
+
+```bash
+terraform -version
+```
+
+![terraform -version](screenshots/01-terraform-version.png)
+
+O comando confirmou que o Terraform v1.12.0 estava instalado e pronto para uso.
+
+---
+
+### 5. Formatando o código
 
 Antes de prosseguir, executei o comando de formatação para garantir que o código estava padronizado:
 
@@ -109,16 +122,13 @@ Antes de prosseguir, executei o comando de formatação para garantir que o cód
 terraform fmt
 ```
 
-**Resultado:**
-```
-main.tf
-```
+![terraform fmt](screenshots/02-terraform-fmt.png)
 
 O Terraform formatou o arquivo `main.tf` automaticamente, aplicando as convenções de estilo recomendadas pela HashiCorp. Isso ajuda a manter a legibilidade do código.
 
 ---
 
-### 5. Inicializando o workspace
+### 6. Inicializando o workspace
 
 Com os arquivos criados, o próximo passo foi inicializar o workspace:
 
@@ -126,31 +136,13 @@ Com os arquivos criados, o próximo passo foi inicializar o workspace:
 terraform init
 ```
 
-**Resultado:**
-```
-Initializing the backend...
-Initializing provider plugins...
-- Finding hashicorp/aws versions matching "~> 5.92"...
-- Installing hashicorp/aws v5.100.0...
-- Installed hashicorp/aws v5.100.0 (signed by HashiCorp)
-
-Terraform has created a lock file .terraform.lock.hcl to record the provider
-selections it made above. Include this file in your version control repository
-so that Terraform can guarantee to make the same selections by default when
-you run "terraform init" in the future.
-
-Terraform has been successfully initialized!
-
-You may now begin working with Terraform. Try running "terraform plan" to see
-any changes that are required for your infrastructure. All Terraform commands
-should now work.
-```
+![terraform init](screenshots/03-terraform-init.png)
 
 Durante a inicialização, o Terraform baixou o provider da AWS e instalou na pasta `.terraform`. Também criou o arquivo `.terraform.lock.hcl`, que funciona como um "package-lock" do npm, garantindo que sempre que alguém clonar o repositório e rodar `terraform init`, as mesmas versões dos providers serão instaladas.
 
 ---
 
-### 6. Validando a configuração
+### 7. Validando a configuração
 
 Antes de aplicar qualquer mudança na nuvem, validei a configuração para garantir que não havia erros de sintaxe:
 
@@ -158,16 +150,13 @@ Antes de aplicar qualquer mudança na nuvem, validei a configuração para garan
 terraform validate
 ```
 
-**Resultado:**
-```
-Success! The configuration is valid.
-```
+![terraform validate](screenshots/04-terraform-validate.png)
 
 A validação verifica se a sintaxe está correta, se todos os recursos referenciados existem, e se a configuração é internamente consistente. É uma boa prática executar isso antes de qualquer `apply`.
 
 ---
 
-### 7. Criando a infraestrutura na AWS
+### 8. Criando a infraestrutura na AWS
 
 Finalmente, chegou o momento de provisionar a instância EC2:
 
@@ -175,54 +164,13 @@ Finalmente, chegou o momento de provisionar a instância EC2:
 terraform apply -auto-approve
 ```
 
-**Resultado:**
-```
-data.aws_ami.ubuntu: Reading...
-data.aws_ami.ubuntu: Read complete after 2s [id=ami-096f5760b00bcd95c]
-
-Terraform used the selected providers to generate the following execution
-plan. Resource actions are indicated with the following symbols:
-  + create
-
-Terraform will perform the following actions:
-
-  # aws_instance.app_server will be created
-  + resource "aws_instance" "app_server" {
-      + ami                                  = "ami-096f5760b00bcd95c"
-      + instance_type                        = "t2.micro"
-      + tags                                 = {
-          + "Name" = "learn-terraform"
-        }
-      + arn                                  = (known after apply)
-      + associate_public_ip_address          = (known after apply)
-      + availability_zone                    = (known after apply)
-      + cpu_core_count                       = (known after apply)
-      + cpu_threads_per_core                 = (known after apply)
-      + id                                   = (known after apply)
-      + instance_state                       = (known after apply)
-      + private_ip                           = (known after apply)
-      + public_ip                            = (known after apply)
-      + subnet_id                            = (known after apply)
-      + vpc_security_group_ids               = (known after apply)
-      ...
-    }
-
-Plan: 1 to add, 0 to change, 0 to destroy.
-
-aws_instance.app_server: Creating...
-aws_instance.app_server: Still creating... [00m10s elapsed]
-aws_instance.app_server: Still creating... [00m18s elapsed]
-aws_instance.app_server: Still creating... [00m28s elapsed]
-aws_instance.app_server: Creation complete after 35s [id=i-0f365259e5bcc200c]
-
-Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
-```
+![terraform apply](screenshots/05-terraform-apply.png)
 
 O Terraform primeiro gerou um plano de execução mostrando exatamente o que seria criado. O sinal de mais (+) indica que o recurso será criado. Depois de mostrar o plano, ele começou a criar a instância, mostrando o progresso em tempo real. Em cerca de 35 segundos, a instância estava pronta e rodando na AWS.
 
 ---
 
-### 8. Verificando o que foi criado
+### 9. Verificando o que foi criado
 
 Para confirmar que tudo deu certo, liste os recursos gerenciados pelo Terraform:
 
@@ -230,11 +178,7 @@ Para confirmar que tudo deu certo, liste os recursos gerenciados pelo Terraform:
 terraform state list
 ```
 
-**Resultado:**
-```
-data.aws_ami.ubuntu
-aws_instance.app_server
-```
+![terraform state list](screenshots/06-terraform-state-list.png)
 
 O Terraform mantém um registro de tudo que ele gerencia no arquivo `terraform.tfstate`. Mesmo o data source (que não é um recurso real na AWS) é rastreado, porque a AMI encontrada pode ser relevante para auditoria.
 
@@ -244,24 +188,29 @@ Para ver todos os detalhes da infraestrutura:
 terraform show
 ```
 
-**Resultado:** O comando exibiu todas as informações da instância criada, incluindo:
+![terraform show](screenshots/08-terraform-show.png)
 
-- AMI ID: ami-096f5760b00bcd95c
-- Instance ID: i-0f365259e5bcc200c
-- Instance Type: t2.micro
-- Availability Zone: us-west-2c
-- Estado: running
-- Public IP: 54.71.125.62
-- Private IP: 172.31.3.7
-- Public DNS: ec2-54-71-125-62.us-west-2.compute.amazonaws.com
-- Security Group: default
-- VPC: subnet-0ca534fcb1b0cf430
+O comando exibiu todas as informações da instância criada, incluindo o ID, tipo, zona de disponibilidade, IPs, security groups e muito mais.
+
+---
+
+### 10. Verificando o estado atual
+
+Após a criação, executei o `terraform plan` para confirmar que a infraestrutura real está alinhada com a configuração:
+
+```bash
+terraform plan
+```
+
+![terraform plan](screenshots/07-terraform-plan.png)
+
+O resultado "No changes" confirma que a instância EC2 foi criada exatamente conforme especificado nos arquivos de configuração.
 
 ---
 
 ## Recursos que foram provisionados na nuvem
 
-Abaixo está um resumo detalhado de tudo que o Terraform criou na AWS:
+Abaixo está um resumo detalhado de tudo que o Terraform criou na AWS, evidenciado por meio de comandos do AWS CLI.
 
 ### Instância EC2
 
@@ -292,6 +241,18 @@ Abaixo está um resumo detalhado de tudo que o Terraform criou na AWS:
 | Virtualização | HVM |
 | Owner | Canonical (099720109477) |
 | Plataforma | Linux/UNIX |
+
+### Evidência via AWS CLI
+
+Para comprovar que os recursos realmente existem na AWS, executei o comando `aws ec2 describe-instances`:
+
+```bash
+aws ec2 describe-instances --region us-west-2 --instance-ids i-0f365259e5bcc200c
+```
+
+![aws ec2 describe-instances](screenshots/09-aws-ec2-describe.png)
+
+O output confirma que a instância está em execução, com todos os atributos que o Terraform provisionou: AMI, tipo t2.micro, IP público, DNS, security groups, volumes e outras configurações.
 
 ---
 
